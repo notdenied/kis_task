@@ -1,15 +1,15 @@
 #include "definitions.hpp"
 
-std::size_t CardCountHeuristic(const PositionType& position) {
+std::size_t CardCountHeuristic(const Position& position) {
   // simple heuristic - card count on the table (we want zero)
   std::size_t count = 0;
-  for (const HeapType& heap : position) {
+  for (const Heap& heap : position) {
     count += heap.size();
   }
   return count;
 }
 
-std::size_t InversionsCountSlowHeuristic(const PositionType& position) {
+std::size_t InversionsCountSlowHeuristic(const Position& position) {
   // a bit more complex heuristic - sum of inversions in every heap (can only
   // decrease, less == better (0 in the end))
 
@@ -27,7 +27,7 @@ std::size_t InversionsCountSlowHeuristic(const PositionType& position) {
 
 template <SimpleHeuristicType... heuristics>
 struct HeuristicContainer {
-  std::size_t operator()(const PositionType& heap) {
+  std::size_t operator()(const Position& heap) {
     return (heuristics(heap) + ...);
   }
 };

@@ -33,11 +33,13 @@ class AStar {
       : heuristic_(heuristic), turns_generator_(generator) {}
 
   bool FoundSolution(const Vertex& start) {
+    // precondition: start is sorted vertex
     // return true if solution exists; reusable
 
     queue_.clear();
     checked_.clear();
     current_number_ = 0;
+
     queue_.insert(AStarNode(start, heuristic_(start), -1,
                             current_number_++));  // -1 is ok
     while (!queue_.empty()) {

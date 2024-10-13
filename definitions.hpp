@@ -15,4 +15,4 @@ using Position = std::array<Heap, kHeapCount>;  // can be constant sized
 
 // function type for atomic heuristics for further combinations (but can be
 // passed directly)
-using SimpleHeuristicType = std::size_t(const Position& heap);
+using SimpleHeuristicType = std::size_t(const Position& position);

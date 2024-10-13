@@ -15,7 +15,7 @@ int main() {
       std::cin >> start[i][j];
     }
   }
-  ReducePosition(start);
+  ReducePositionIfNeeded(start);
   SortPosition(start);
 
   using Container = std::set<ContainersValue<Position>>;

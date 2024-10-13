@@ -25,6 +25,7 @@ class AStar {
   std::function<std::vector<Vertex>(const Vertex&)> turns_generator_;
   QueueContainer queue_;
   CheckedContainer checked_;
+  std::size_t current_number_ = 0;
 
  public:
   template <typename Heuristic, typename TurnsGenerator>
@@ -36,11 +37,14 @@ class AStar {
 
     queue_.clear();
     checked_.clear();
-    queue_.insert(AStarNode(start, heuristic_(start), -1, 0));  // -1 is ok
+    current_number_ = 0;
+    queue_.insert(AStarNode(start, heuristic_(start), -1,
+                            current_number_++));  // -1 is ok
     while (!queue_.empty()) {
       auto first = queue_.begin();
 
       if (checked_.contains(*first)) {
+        queue_.erase(first);
         continue;
       }
       checked_.insert(*first);
@@ -56,8 +60,8 @@ class AStar {
         // directly to the queue (but generator need to be able to count
         // heurictics - it is bad design)
         size_t distance = heuristic_(vertex);
-        queue_.insert(AStarNode(std::move(vertex), first->number,
-                                checked_.size(), distance));
+        queue_.insert(AStarNode(std::move(vertex), distance, first->number,
+                                current_number_++));
       }
       queue_.erase(first);
     }
@@ -67,15 +71,15 @@ class AStar {
 
   void PrintWay() {
     // precondition: FoundSolution called and returned `true`.
-    // TODO: better indexation to remove logic below.
 
-    std::vector<AStarNode<Vertex>> matching(checked_.size());
+    // TODO: better indexation to remove logic below.
+    std::vector<AStarNode<Vertex>> matching(current_number_);
     for (const auto& vertex : checked_) {
       matching[vertex.number] = vertex;
     }
 
     AStarNode<Vertex> cur_node = finish_;
-    std::cout << "empty_position\n";
+    std::cout << "empty_position";
 
     while (cur_node.previous != static_cast<std::size_t>(-1)) {  // ok
       cur_node = matching[cur_node.previous];
@@ -88,8 +92,13 @@ class AStar {
 
   void PrintVertex(const Vertex& vertex) {
     // TODO (!): vertex type-independent print (move to operator of Position)
+
     for (std::size_t i = 0; i < vertex.size(); ++i) {
       std::cout << '\n';
+      if (vertex[i].empty()) {
+        std::cout << "empty_heap";
+        continue;
+      }
       for (std::size_t j = 0; j < vertex[i].size(); ++j) {
         std::cout << vertex[i][j] << ' ';
       }
